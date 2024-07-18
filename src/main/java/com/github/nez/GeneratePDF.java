@@ -31,16 +31,14 @@ import java.nio.file.Paths;
 
 public class GeneratePDF {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GeneratePDF.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(GeneratePDF.class);
 
-    final String CREDITORS_II_JSON = "src/main/resources/Creditors_II.json";
+    static final String CREDITORS_II_JSON = "src/main/resources/Creditors_II.json";
+    static final String CREDITORS_II_DOCX = "src/main/resources/Creditors_II.docx";
 
     public static void main(String[] args) {
-        
 
-        // write a function to load credentials from a file in java
-
-        try (InputStream inputStream = Files.newInputStream(new File("src/main/resources/Creditors_Draft_II.docx").toPath())) {
+        try (InputStream inputStream = Files.newInputStream(new File(CREDITORS_II_DOCX).toPath())) {
             // Initial setup, create credentials instance
             Credentials credentials = new ServicePrincipalCredentials(
                     "1f50ad1618b04e4fac9032f326e6155a",
@@ -53,7 +51,7 @@ public class GeneratePDF {
             Asset asset = pdfServices.upload(inputStream, PDFServicesMediaType.DOCX.getMediaType());
 
             // Setup input data for the document merge process
-            Path jsonPath = Paths.get("src/main/resources/Creditors_Draft_II.docx");
+            Path jsonPath = Paths.get(CREDITORS_II_JSON);
             String json = new String(Files.readAllBytes(jsonPath));
             JSONObject jsonDataForMerge = new JSONObject(json);
 
@@ -75,13 +73,13 @@ public class GeneratePDF {
             StreamAsset streamAsset = pdfServices.getContent(resultAsset);
 
             // Creates an output stream and copy stream asset's content to it
-            Files.createDirectories(Paths.get("output/"));
-            OutputStream outputStream = Files.newOutputStream(new File("output/generatePDFOutput.pdf").toPath());
-            LOGGER.info("Saving asset at output/generatePDFOutput.pdf");
+            Files.createDirectories(Paths.get("/output/"));
+            OutputStream outputStream = Files.newOutputStream(new File("/output/generatePDFOutput.pdf").toPath());
+//            LOGGER.info("Saving asset at output/generatePDFOutput.pdf");
             IOUtils.copy(streamAsset.getInputStream(), outputStream);
             outputStream.close();
         } catch (ServiceApiException | IOException | SDKException | ServiceUsageException e) {
-            LOGGER.error("Exception encountered while executing operation", e);
+//            LOGGER.error("Exception encountered while executing operation", e);
         }
     }
 }
