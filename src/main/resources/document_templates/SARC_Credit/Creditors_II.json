@@ -1,0 +1,63 @@
+{
+  "CREDITEE_NAME_FIRST": "Nez",
+  "CREDITEE_NAME_LAST": "Stills",
+  "CREDITEE_ADDRESS_STREET": "5 Oliver Ave",
+  "CREDITEE_ADDRESS_CITY": "Ewing",
+  "CREDITEE_ADDRESS_STATE": "PA",
+  "CREDITEE_ADDRESS_ZIP": 19150,
+  "CREDITOR_NAME_FIRST": "Sallie",
+  "CREDITOR_NAME_LAST": "Mae",
+  "CREDITOR_ADDRESS_STREET": "999 Debt Street",
+  "CREDITOR_ADDRESS_CITY": "Loan Alley",
+  "CREDITOR_ADDRESS_STATE": "WA",
+  "CREDITOR_ADDRESS_ZIP": "08991",
+  "VIOLATIONS": [
+    {
+      "VIOLATION_TITLE": "15 U.S. Code § 1681",
+      "VIOLATION_CAUSE": "SEE CREDIT REPORT"
+    },
+    {
+      "VIOLATION_TITLE": "15 U.S. Code § 1681(c)"
+    },
+    {
+      "VIOLATION_TITLE": "12 CFR § 1022.3"
+    },
+    {
+      "VIOLATION_TITLE": "P.L. 90-321 (82 Statute 146) per The Truth in Lending Act"
+    },
+    {
+      "VIOLATION_TITLE": "5 U.S. Code § 552(a)"
+    },
+    {
+      "VIOLATION_TITLE": "5 U.S. Code § 552(b)"
+    },
+    {
+      "VIOLATION_TITLE": "20 U.S. Code § 1232g (4)(B)"
+    },
+    {
+      "VIOLATION_TITLE": "31 U.S. Code § 3711 (e)(1)(C)(ii)"
+    }
+  ],
+  "CONSUMER_RIGHTS": [
+    {
+      "RIGHT": "Provide method for consumers concerning The Creditor privacy policies and practices (12 CFR § 1016 Regulation P);"
+    },
+    {
+      "RIGHT": "Provide method for consumers to prevent institutions from disclosing information to third parties (12 CFR § 1016.10a);"
+    },
+    {
+      "RIGHT": "Provide a clear and conspicuous notice that reflects privacy policies and practices;"
+    },
+    {
+      "RIGHT": "The duration of the opt out is effective until The Creditee revokes the rights described in this section in writing or electronic consent-agreement (12 CFR § 1016.i);"
+    }
+  ],
+  "REMEDY": [
+    {
+      "REMEDY": "Dismiss the intent to bring civil action against The Creditor in a court of law;"
+    },
+    {
+      "REMEDY": "Dismiss filing a complaint(s) with respective enforcement agencies"
+    }
+  ]
+}

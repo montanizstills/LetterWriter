@@ -1,5 +1,5 @@
 **/desktop.ini
-
+**/secrets/*
 resources/document_templates/*
 target/
 !.mvn/wrapper/maven-wrapper.jar
