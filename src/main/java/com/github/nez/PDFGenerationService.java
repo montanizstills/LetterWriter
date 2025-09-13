@@ -1,8 +1,8 @@
 package com.github.nez;
 
+import com.adobe.pdfservices.operation.auth.Credentials;
 import com.github.nez.utils.CredentialsBuilder;
 import com.github.nez.utils.JSONPayload;
-import com.adobe.pdfservices.operation.auth.Credentials;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +47,7 @@ public class PDFGenerationService {
         }
     }
 
-    // Convenience method with default output path
-    public void generatePDF(String documentPath, String jsonPath, String credentialsPath)
-            throws Exception {
-        generatePDF(documentPath, jsonPath, credentialsPath, "output/generatePDFOutput.pdf");
-    }
+
 }
+
+

@@ -1,0 +1,4 @@
+PROPERTY_CODE,UNIT_NUMBER,TENANT_FIRST_NAME,TENANT_LAST_NAME,MAINTENANCE_NOTICE_DUE_DATE,MAINTENANCE_TYPE,SCHEDULED_DATE,WORK_TO_BE_COMPLETED
+patvlg2,221,Nez,Stills,2024-03-15,Dentist Appt.,9/17/2025,
+patriot,304,Sarah,Johnson,2024-03-16,Plumbing,9/15/2025,work to do; some other things; fix the sink
+patvlg2,105,Mike,Smith,2024-03-17,Electrical,9/16/2025,replace outlet; check wiring; test breakers
