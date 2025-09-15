@@ -23,10 +23,9 @@ public class CSVToJSONProcessor {
             "UNIT_NUMBER",
             "TENANT_FIRST_NAME",
             "TENANT_LAST_NAME",
-            "MAINTENANCE_NOTICE_DUE_DATE",
-            "MAINTENANCE_TYPE",
             "SCHEDULED_DATE",
-            "WORK_TO_BE_COMPLETED"  // Semi-colon delimited list
+            "SENT_DATE",
+            "WORK_TO_BE_COMPLETED"
     };
 
     /**
@@ -80,9 +79,9 @@ public class CSVToJSONProcessor {
             notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
             notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
             notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
-            notice.put("MAINTENANCE_NOTICE_DUE_DATE", getValueOrEmpty(record, "MAINTENANCE_NOTICE_DUE_DATE"));
-            notice.put("MAINTENANCE_TYPE", getValueOrEmpty(record, "MAINTENANCE_TYPE"));
+            notice.put("SENT_DATE", getValueOrEmpty(record, "SENT_DATE"));
             notice.put("SCHEDULED_DATE", getValueOrEmpty(record, "SCHEDULED_DATE"));
+            notice.put("WORK_TO_BE_COMPLETED", getValueOrEmpty(record, "WORK_TO_BE_COMPLETED"));
 
             // Process work items (semi-colon delimited)
             String workItemsText = getValueOrEmpty(record, "WORK_TO_BE_COMPLETED");
