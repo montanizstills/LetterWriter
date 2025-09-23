@@ -18,6 +18,15 @@ public enum DevelopmentPropertyInfo {
             "NJ",
             "08638",
             "patriotvillagenj.com"
+    ),
+    CONCORD_RESIDENCES(
+            "concord",
+            "Concord Residences",
+            "10 Concord St",
+            "Hillsborough",
+            "NJ",
+            "08540",
+            "concordresidences.com"
     );
 
     DevelopmentPropertyInfo(String propertyCode, String propertyName, String addressStreet, String addressCity, String addressState, String addressZip, String propertyWebsite) {
