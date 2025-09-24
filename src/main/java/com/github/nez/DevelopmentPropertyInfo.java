@@ -8,7 +8,7 @@ public enum DevelopmentPropertyInfo {
             "Trenton",
             "NJ",
             "08618",
-            "jenningsvillage.com"
+            "patriotvillagenj.com"
     ),
     PATRIOT_VILLAGE(
             "patvlg2",
@@ -17,7 +17,7 @@ public enum DevelopmentPropertyInfo {
             "Trenton",
             "NJ",
             "08638",
-            "patriotvillagenj.com"
+            "jenningsvillage.com"
     ),
     CONCORD_RESIDENCES(
             "concord",
