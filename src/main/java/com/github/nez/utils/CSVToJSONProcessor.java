@@ -79,8 +79,8 @@ public class CSVToJSONProcessor {
             notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
             notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
             notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
-            notice.put("SENT_DATE", getValueOrEmpty(record, "SENT_DATE"));
-            notice.put("SCHEDULED_DATE", getValueOrEmpty(record, "SCHEDULED_DATE"));
+            notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+            notice.put("EXPECTED_DATE", getValueOrEmpty(record, "EXPECTED_DATE"));
             notice.put("WORK_TO_BE_COMPLETED", getValueOrEmpty(record, "WORK_TO_BE_COMPLETED"));
 
             // Process work items (semi-colon delimited)
