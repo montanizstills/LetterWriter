@@ -42,8 +42,8 @@ public class ExtractPDF {
                 InputStream inputStream = Files.newInputStream(new File(SHERIFF_SALES_LIST).toPath())) {
             // Initial setup, create credentials instance
             Credentials credentials = new ServicePrincipalCredentials(
-                    "1f50ad1618b04e4fac9032f326e6155a",
-                    "p8e-z2Se-CZlz_GTdNtq7olseTK5fZwvhusa"
+                    "",
+                    ""
             );
 
             // Creates a PDF Services instance
