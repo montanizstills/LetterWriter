@@ -23,8 +23,8 @@ public class CSVToJSONProcessor {
             "UNIT_NUMBER",
             "TENANT_FIRST_NAME",
             "TENANT_LAST_NAME",
-            "SCHEDULED_DATE",
-            "SENT_DATE",
+            "NOTICE_SENT_DATE",
+            "WORK_EXPECTED_DATE",
             "WORK_TO_BE_COMPLETED"
     };
 
@@ -68,8 +68,30 @@ public class CSVToJSONProcessor {
     }
 
     /**
-     * Processes a single CSV record into a JSON object
+     * Parses semi-colon delimited work items into a simple JSON array of strings
      */
+    private JSONArray parseWorkItems(String workItemsText) {
+        JSONArray workItems = new JSONArray();
+
+        if (workItemsText != null && !workItemsText.trim().isEmpty()) {
+            String[] items = workItemsText.split(";");
+
+            for (String item : items) {
+                String trimmedItem = item.trim();
+                if (!trimmedItem.isEmpty()) {
+                    // Create an object with WORK_ITEM property instead of just a string
+                    JSONObject workItemObj = new JSONObject();
+                    workItemObj.put("WORK_ITEM", trimmedItem);
+                    workItems.put(workItemObj);
+                }
+            }
+
+            LOGGER.debug("Parsed {} work items from text: '{}'", workItems.length(), workItemsText);
+        }
+
+        return workItems;
+    }
+
     private JSONObject processCSVRecord(CSVRecord record) {
         try {
             JSONObject notice = new JSONObject();
@@ -79,17 +101,22 @@ public class CSVToJSONProcessor {
             notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
             notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
             notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
+            notice.put("WORK_EXPECTED_DATE", getValueOrEmpty(record, "WORK_EXPECTED_DATE"));
             notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
-            notice.put("EXPECTED_DATE", getValueOrEmpty(record, "EXPECTED_DATE"));
-            notice.put("WORK_TO_BE_COMPLETED", getValueOrEmpty(record, "WORK_TO_BE_COMPLETED"));
 
-            // Process work items (semi-colon delimited)
+            // Process work items as simple array
             String workItemsText = getValueOrEmpty(record, "WORK_TO_BE_COMPLETED");
+            LOGGER.debug("Processing work items for unit {}: '{}'",
+                    getValueOrEmpty(record, "UNIT_NUMBER"), workItemsText);
+
             if (!workItemsText.isEmpty()) {
                 JSONArray workItems = parseWorkItems(workItemsText);
-                if (workItems.length() > 0) {
-                    notice.put("WORK_TO_BE_COMPLETED", workItems);
-                }
+                notice.put("WORK_TO_BE_COMPLETED", workItems);
+                LOGGER.debug("Added {} work items to notice", workItems.length());
+            } else {
+                LOGGER.warn("No work items found for unit {}", getValueOrEmpty(record, "UNIT_NUMBER"));
+                // Add empty array to prevent template errors
+                notice.put("WORK_TO_BE_COMPLETED", new JSONArray());
             }
 
             LOGGER.debug("Processed record for Unit {} - {}",
@@ -117,27 +144,6 @@ public class CSVToJSONProcessor {
         }
     }
 
-    /**
-     * Parses semi-colon delimited work items into JSON array
-     */
-    private JSONArray parseWorkItems(String workItemsText) {
-        JSONArray workItems = new JSONArray();
-
-        if (workItemsText != null && !workItemsText.trim().isEmpty()) {
-            String[] items = workItemsText.split(";");
-
-            for (String item : items) {
-                String trimmedItem = item.trim();
-                if (!trimmedItem.isEmpty()) {
-                    JSONObject workItem = new JSONObject();
-                    workItem.put("WORK_ITEM", trimmedItem);
-                    workItems.put(workItem);
-                }
-            }
-        }
-
-        return workItems;
-    }
 
     /**
      * Saves the JSON object to a file for debugging/verification

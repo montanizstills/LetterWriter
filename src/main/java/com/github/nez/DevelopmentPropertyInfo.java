@@ -1,5 +1,7 @@
 package com.github.nez;
 
+import org.json.JSONObject;
+
 public enum DevelopmentPropertyInfo {
     JENNINGS_VILLAGE(
             "patriot",
@@ -75,4 +77,32 @@ public enum DevelopmentPropertyInfo {
     public String getPropertyCode() {
         return propertyCode;
     }
+
+
+    public static DevelopmentPropertyInfo findByCode(String propertyCode) {
+        for (DevelopmentPropertyInfo property : values()) {
+            if (property.propertyCode.equalsIgnoreCase(propertyCode)) {
+                return property;
+            }
+        }
+        return null;
+    }
+
+    public JSONObject enrichNotice(JSONObject originalNotice) {
+        JSONObject enrichedNotice = new JSONObject(originalNotice.toString());
+
+        enrichedNotice.put("PROPERTY_NAME", this.propertyName);
+        enrichedNotice.put("PROPERTY_ADDRESS_STREET", this.addressStreet);
+        enrichedNotice.put("PROPERTY_ADDRESS_CITY", this.addressCity);
+        enrichedNotice.put("PROPERTY_ADDRESS_STATE", this.addressState);
+        enrichedNotice.put("PROPERTY_ADDRESS_ZIP", this.addressZip);
+        enrichedNotice.put("PROPERTY_WEBSITE", this.propertyWebsite);
+        enrichedNotice.put("PROPERTY_FULL_ADDRESS",
+                String.format("%s, %s, %s %s",
+                        this.addressStreet, this.addressCity,
+                        this.addressState, this.addressZip));
+
+        return enrichedNotice;
+    }
+
 }
