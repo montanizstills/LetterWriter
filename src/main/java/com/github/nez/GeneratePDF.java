@@ -67,7 +67,7 @@ public class GeneratePDF {
 
     public void generateMultiplePDFsFromCSV(String documentPath, String csvFilePath,
                                             String credentialsPath, String outputDir, String logPath) throws Exception {
-        generateMultiplePDFsFromCSV(documentPath, csvFilePath, credentialsPath, outputDir, logPath, Boolean.TRUE);
+        generateMultiplePDFsFromCSV(documentPath, csvFilePath, credentialsPath, outputDir, logPath, Boolean.FALSE);
     }
 
     public void generateMultiplePDFsFromCSV(String documentPath, String csvFilePath,
@@ -98,7 +98,7 @@ public class GeneratePDF {
 
                 LOGGER.info("Full JSON: {}", enrichedNotice.toString(2));
 
-                String outputPath = String.format("%s/%s%s_%s_%s_MaintenanceNotice_.pdf",
+                String outputPath = String.format("%s/%s_%s_%s_%s_MaintenanceNotice_.pdf",
                         outputDir,
                         enrichedNotice.getString("PROPERTY_CODE"),
                         enrichedNotice.getString("UNIT_NUMBER"),
