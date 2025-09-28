@@ -29,6 +29,15 @@ public enum DevelopmentPropertyInfo {
             "NJ",
             "08540",
             "concordresidences.com"
+    ),
+    AMWELL_COMMONS(
+            "amwell",
+            "Westering Place",
+            "2 CPL Langon Way",
+            "Hillsborogh",
+            "NJ",
+            "08844",
+            "rpmhillsborough.com"
     );
 
     DevelopmentPropertyInfo(String propertyCode, String propertyName, String addressStreet, String addressCity, String addressState, String addressZip, String propertyWebsite) {
