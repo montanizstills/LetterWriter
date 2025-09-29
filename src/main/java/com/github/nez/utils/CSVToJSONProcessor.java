@@ -32,6 +32,7 @@ public class CSVToJSONProcessor {
                     .setSkipHeaderRecord(true)
                     .setTrim(true)
                     .setIgnoreEmptyLines(true)
+                    .setIgnoreHeaderCase(true)
                     .build();
 
             CSVParser csvParser = csvFormat.parse(reader);
@@ -69,7 +70,9 @@ public class CSVToJSONProcessor {
                 };
             case FAILED_EXTERMINATION:
                 return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER", "FAILURE_REASONS"
+                        "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
+                        "EXPECTED_WORK_DATE", "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
+                        "FAILURE_REASONS"
                 };
             default:
                 throw new IllegalArgumentException("Unknown notice type: " + noticeType);
@@ -152,6 +155,10 @@ public class CSVToJSONProcessor {
     private void processFailedExterminationRecord(CSVRecord record, JSONObject notice) {
         notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
         notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+        notice.put("EXPECTED_WORK_DATE",getValueOrEmpty(record,"EXPECTED_WORK_DATE"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
 
         String failureReasons = getValueOrEmpty(record, "FAILURE_REASONS");
         if (!failureReasons.isEmpty()) {

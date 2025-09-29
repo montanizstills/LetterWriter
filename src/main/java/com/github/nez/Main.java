@@ -3,7 +3,7 @@ package com.github.nez;
 public class Main {
 
 //    static final String RPM_MAINT_NO_DOCX = "src/main/resources/document_templates/RPM/Maintenance Notice_Template.docx";
-//    static final String RPM_FAILED_INSPECT_DOCX = "src/main/resources/document_templates/RPM/Failed_Extermination_Notice_Template.docx";
+//    static final String RPM_FAILED_INSPECT_DOCX = "src/main/resources/document_templates/RPM/LeaseInfraction_Failed_Extermination_Notice_Template.docx";
 //    static final String RPM_MAINT_NO_BATCH_CSV = "src/main/resources/document_templates/RPM/RPM_Maint_No_Batch.csv";
 //    static final String RPM_MAINT_NO_BATCH_JSON = "src/main/resources/document_templates/RPM/failed_inspection.json";
 //
@@ -17,24 +17,24 @@ public class Main {
         GeneratePDF pdf = new GeneratePDF();
 
         // Generate maintenance notices
-        pdf.generateMultiplePDFsFromCSV(
-                NoticeType.MAINTENANCE,
-                "src/main/resources/document_templates/RPM/RPM_Maint_No_Batch.csv",
-                CREDENTIALS_JSON,
-                "output",
-                LOG_FILE_PATH,
-                Boolean.TRUE
-        );
+//        pdf.generateMultiplePDFsFromCSV(
+//                NoticeType.MAINTENANCE,
+//                "src/main/resources/document_templates/RPM/RPM_Maint_No_Batch.csv",
+//                CREDENTIALS_JSON,
+//                "output",
+//                LOG_FILE_PATH,
+//                Boolean.TRUE
+//        );
 
         // Generate dog infraction notices
-        pdf.generateMultiplePDFsFromCSV(
-                NoticeType.LEASE_INFRACTION_DOGS,
-                "src/main/resources/document_templates/RPM/leaseinfraction_dogs.csv",
-                CREDENTIALS_JSON,
-                "output",
-                LOG_FILE_PATH,
-                Boolean.FALSE
-        );
+//        pdf.generateMultiplePDFsFromCSV(
+//                NoticeType.LEASE_INFRACTION_DOGS,
+//                "src/main/resources/document_templates/RPM/leaseinfraction_dogs.csv",
+//                CREDENTIALS_JSON,
+//                "output",
+//                LOG_FILE_PATH,
+//                Boolean.FALSE
+//        );
 
         // Generate failed extermination notices
         pdf.generateMultiplePDFsFromCSV(
@@ -43,7 +43,7 @@ public class Main {
                 CREDENTIALS_JSON,
                 "output",
                 LOG_FILE_PATH,
-                Boolean.FALSE
+                Boolean.TRUE
         );
     }
 }
