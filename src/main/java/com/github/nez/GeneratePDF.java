@@ -65,31 +65,38 @@ public class GeneratePDF {
         LOGGER.info("Batch PDF generation completed");
     }
 
-    public void generateMultiplePDFsFromCSV(String documentPath, String csvFilePath,
+    public void generateMultiplePDFsFromCSV(NoticeType noticeType, String csvFilePath,
                                             String credentialsPath, String outputDir, String logPath) throws Exception {
-        generateMultiplePDFsFromCSV(documentPath, csvFilePath, credentialsPath, outputDir, logPath, Boolean.FALSE);
+        generateMultiplePDFsFromCSV(noticeType, csvFilePath, credentialsPath, outputDir, logPath, Boolean.FALSE);
     }
 
-    public void generateMultiplePDFsFromCSV(String documentPath, String csvFilePath,
+    public void generateMultiplePDFsFromCSV(NoticeType noticeType, String csvFilePath,
                                             String credentialsPath, String outputDir,
                                             String logPath, Boolean saveJSON) throws Exception {
         LoggingConfigurer.configureFileLogging(logPath);
-        LOGGER.info("Starting CSV-based PDF generation process...");
+        LOGGER.info("Starting CSV-based PDF generation process for notice type: {}", noticeType);
+
+        // Determine the document template path based on notice type
+        String documentPath = getDocumentPath(noticeType);
 
         CSVToJSONProcessor csvProcessor = new CSVToJSONProcessor();
-        JSONObject combinedJson = csvProcessor.convertCSVToJSON(csvFilePath);
-        if (saveJSON) csvProcessor.saveJSONToFile(combinedJson, outputDir + "/converted_data.json");
+        JSONObject combinedJson = csvProcessor.convertCSVToJSON(csvFilePath, noticeType);
+
+        if (saveJSON) {
+            csvProcessor.saveJSONToFile(combinedJson, outputDir + "/converted_data.json");
+        }
 
         Credentials credentials = new CredentialsBuilder().addFilePath(credentialsPath).createCredentials();
 
-        if (combinedJson.has("maintenance_notices")) {
-            org.json.JSONArray noticesArray = combinedJson.getJSONArray("maintenance_notices");
-            LOGGER.info("Processing {} maintenance notices from CSV", noticesArray.length());
+        String arrayKey = getNoticeArrayKey(noticeType);
+
+        if (combinedJson.has(arrayKey)) {
+            org.json.JSONArray noticesArray = combinedJson.getJSONArray(arrayKey);
+            LOGGER.info("Processing {} {} from CSV", noticesArray.length(), arrayKey);
 
             for (int i = 0; i < noticesArray.length(); i++) {
                 JSONObject singleNotice = noticesArray.getJSONObject(i);
 
-                // This is your requested syntax:
                 DevelopmentPropertyInfo propertyInfo = DevelopmentPropertyInfo.findByCode(
                         singleNotice.getString("PROPERTY_CODE"));
 
@@ -98,12 +105,7 @@ public class GeneratePDF {
 
                 LOGGER.info("Full JSON: {}", enrichedNotice.toString(2));
 
-                String outputPath = String.format("%s/%s_%s_%s_%s_MaintenanceNotice_.pdf",
-                        outputDir,
-                        enrichedNotice.getString("PROPERTY_CODE"),
-                        enrichedNotice.getString("UNIT_NUMBER"),
-                        enrichedNotice.getString("TENANT_FIRST_NAME"),
-                        enrichedNotice.getString("TENANT_LAST_NAME"));
+                String outputPath = buildOutputPath(noticeType, outputDir, enrichedNotice);
 
                 try (InputStream inputStream = Files.newInputStream(new File(documentPath).toPath())) {
                     new PDFBuilder()
@@ -116,6 +118,37 @@ public class GeneratePDF {
                 }
             }
         }
-        LOGGER.info("CSV-based PDF generation completed");
+        LOGGER.info("CSV-based PDF generation completed for notice type: {}", noticeType);
+    }
+
+    private String getDocumentPath(NoticeType noticeType) {
+        return String.format("src/main/resources/document_templates/RPM/%s",
+                noticeType.getTemplateFileName());
+    }
+
+    private String getNoticeArrayKey(NoticeType noticeType) {
+        switch (noticeType) {
+            case MAINTENANCE:
+                return "maintenance_notices";
+            case FAILED_EXTERMINATION:
+                return "failed_extermination_notices";
+            case MISSED_EXTERMINATION:
+                return "missed_extermination_notices";
+            case LEASE_INFRACTION_DOGS:
+                return "lease_infraction_notices";
+            default:
+                throw new IllegalArgumentException("Unknown notice type: " + noticeType);
+        }
+    }
+
+    private String buildOutputPath(NoticeType noticeType, String outputDir, JSONObject notice) {
+        String noticeTypeString = noticeType.name().toLowerCase();
+        return String.format("%s/%s_%s_%s_%s_%s.pdf",
+                outputDir,
+                notice.getString("PROPERTY_CODE"),
+                notice.getString("UNIT_NUMBER"),
+                notice.getString("TENANT_FIRST_NAME"),
+                notice.getString("TENANT_LAST_NAME"),
+                noticeTypeString);
     }
 }

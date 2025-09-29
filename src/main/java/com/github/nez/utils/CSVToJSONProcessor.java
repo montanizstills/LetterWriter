@@ -1,5 +1,6 @@
 package com.github.nez.utils;
 
+import com.github.nez.NoticeType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -17,35 +18,17 @@ public class CSVToJSONProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVToJSONProcessor.class);
 
-    // CSV headers that match your JSON structure
-    private static final String[] EXPECTED_HEADERS = {
-            "PROPERTY_CODE",
-            "UNIT_NUMBER",
-            "TENANT_FIRST_NAME",
-            "TENANT_LAST_NAME",
-            "NOTICE_SENT_DATE",
-            "WORK_EXPECTED_DATE",
-            "WORK_TO_BE_COMPLETED"
-    };
-
-    /**
-     * Converts a CSV file to JSON format matching your maintenance notices structure
-     *
-     * @param csvFilePath Path to the CSV file
-     * @return JSONObject with maintenance_notices array
-     * @throws IOException if file reading fails
-     */
-    public JSONObject convertCSVToJSON(String csvFilePath) throws IOException {
-        LOGGER.info("Starting CSV to JSON conversion for file: {}", csvFilePath);
+    public JSONObject convertCSVToJSON(String csvFilePath, NoticeType noticeType) throws IOException {
+        LOGGER.info("Starting CSV to JSON conversion for file: {} with notice type: {}", csvFilePath, noticeType);
 
         JSONObject rootObject = new JSONObject();
-        JSONArray maintenanceNotices = new JSONArray();
+        JSONArray noticesArray = new JSONArray();
 
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
+            String[] headers = getHeadersForNoticeType(noticeType);
 
-            // Configure CSV format with headers
             CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-                    .setHeader(EXPECTED_HEADERS)
+                    .setHeader(headers)
                     .setSkipHeaderRecord(true)
                     .setTrim(true)
                     .setIgnoreEmptyLines(true)
@@ -54,74 +37,78 @@ public class CSVToJSONProcessor {
             CSVParser csvParser = csvFormat.parse(reader);
 
             for (CSVRecord record : csvParser) {
-                JSONObject notice = processCSVRecord(record);
+                JSONObject notice = processCSVRecord(record, noticeType);
                 if (notice != null) {
-                    maintenanceNotices.put(notice);
+                    noticesArray.put(notice);
                 }
             }
 
-            LOGGER.info("Successfully processed {} maintenance notices from CSV", maintenanceNotices.length());
+            LOGGER.info("Successfully processed {} notices from CSV", noticesArray.length());
         }
 
-        rootObject.put("maintenance_notices", maintenanceNotices);
+        String arrayKey = getArrayKeyForNoticeType(noticeType);
+        rootObject.put(arrayKey, noticesArray);
         return rootObject;
     }
 
-    /**
-     * Parses semi-colon delimited work items into a simple JSON array of strings
-     */
-    private JSONArray parseWorkItems(String workItemsText) {
-        JSONArray workItems = new JSONArray();
-
-        if (workItemsText != null && !workItemsText.trim().isEmpty()) {
-            String[] items = workItemsText.split(";");
-
-            for (String item : items) {
-                String trimmedItem = item.trim();
-                if (!trimmedItem.isEmpty()) {
-                    // Create an object with WORK_ITEM property instead of just a string
-                    JSONObject workItemObj = new JSONObject();
-                    workItemObj.put("WORK_ITEM", trimmedItem);
-                    workItems.put(workItemObj);
-                }
-            }
-
-            LOGGER.debug("Parsed {} work items from text: '{}'", workItems.length(), workItemsText);
+    private String[] getHeadersForNoticeType(NoticeType noticeType) {
+        switch (noticeType) {
+            case MAINTENANCE:
+                return new String[]{
+                        "PROPERTY_CODE", "UNIT_NUMBER", "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
+                        "NOTICE_SENT_DATE", "WORK_EXPECTED_DATE", "WORK_TO_BE_COMPLETED"
+                };
+            case LEASE_INFRACTION_DOGS:
+                return new String[]{
+                        "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
+                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME"
+                };
+            case MISSED_EXTERMINATION:
+                return new String[]{
+                        "PROPERTY_CODE", "UNIT_NUMBER"
+                };
+            case FAILED_EXTERMINATION:
+                return new String[]{
+                        "PROPERTY_CODE", "UNIT_NUMBER", "FAILURE_REASONS"
+                };
+            default:
+                throw new IllegalArgumentException("Unknown notice type: " + noticeType);
         }
-
-        return workItems;
     }
 
-    private JSONObject processCSVRecord(CSVRecord record) {
+    private String getArrayKeyForNoticeType(NoticeType noticeType) {
+        switch (noticeType) {
+            case MAINTENANCE:
+                return "maintenance_notices";
+            case FAILED_EXTERMINATION:
+                return "failed_extermination_notices";
+            case MISSED_EXTERMINATION:
+                return "missed_extermination_notices";
+            case LEASE_INFRACTION_DOGS:
+                return "lease_infraction_notices";
+            default:
+                throw new IllegalArgumentException("Unknown notice type: " + noticeType);
+        }
+    }
+
+    private JSONObject processCSVRecord(CSVRecord record, NoticeType noticeType) {
         try {
             JSONObject notice = new JSONObject();
 
-            // Map CSV columns to JSON fields
-            notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
-            notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
-            notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
-            notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
-            notice.put("WORK_EXPECTED_DATE", getValueOrEmpty(record, "WORK_EXPECTED_DATE"));
-            notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
-
-            // Process work items as simple array
-            String workItemsText = getValueOrEmpty(record, "WORK_TO_BE_COMPLETED");
-            LOGGER.debug("Processing work items for unit {}: '{}'",
-                    getValueOrEmpty(record, "UNIT_NUMBER"), workItemsText);
-
-            if (!workItemsText.isEmpty()) {
-                JSONArray workItems = parseWorkItems(workItemsText);
-                notice.put("WORK_TO_BE_COMPLETED", workItems);
-                LOGGER.debug("Added {} work items to notice", workItems.length());
-            } else {
-                LOGGER.warn("No work items found for unit {}", getValueOrEmpty(record, "UNIT_NUMBER"));
-                // Add empty array to prevent template errors
-                notice.put("WORK_TO_BE_COMPLETED", new JSONArray());
+            switch (noticeType) {
+                case MAINTENANCE:
+                    processMaintenanceRecord(record, notice);
+                    break;
+                case LEASE_INFRACTION_DOGS:
+                    processLeaseInfractionDogsRecord(record, notice);
+                    break;
+                case MISSED_EXTERMINATION:
+                    processMissedExterminationRecord(record, notice);
+                    break;
+                case FAILED_EXTERMINATION:
+                    processFailedExterminationRecord(record, notice);
+                    break;
             }
-
-            LOGGER.debug("Processed record for Unit {} - {}",
-                    notice.getString("UNIT_NUMBER"),
-                    notice.getString("TENANT_LAST_NAME"));
 
             return notice;
 
@@ -131,9 +118,78 @@ public class CSVToJSONProcessor {
         }
     }
 
-    /**
-     * Safely gets a value from CSV record, returns empty string if null/missing
-     */
+    private void processMaintenanceRecord(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
+        notice.put("WORK_EXPECTED_DATE", getValueOrEmpty(record, "WORK_EXPECTED_DATE"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+
+        String workItemsText = getValueOrEmpty(record, "WORK_TO_BE_COMPLETED");
+        if (!workItemsText.isEmpty()) {
+            JSONArray workItems = parseWorkItems(workItemsText);
+            notice.put("WORK_TO_BE_COMPLETED", workItems);
+        } else {
+            notice.put("WORK_TO_BE_COMPLETED", new JSONArray());
+        }
+    }
+
+    private void processLeaseInfractionDogsRecord(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
+    }
+
+    private void processMissedExterminationRecord(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        // Add PREV_WORK_SCHEDULE_DATE based on current date logic if needed
+    }
+
+    private void processFailedExterminationRecord(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+
+        String failureReasons = getValueOrEmpty(record, "FAILURE_REASONS");
+        if (!failureReasons.isEmpty()) {
+            JSONArray reasons = parseFailureReasons(failureReasons);
+            notice.put("FAILURE_REASONS", reasons);
+        }
+    }
+
+    private JSONArray parseWorkItems(String workItemsText) {
+        JSONArray workItems = new JSONArray();
+        if (workItemsText != null && !workItemsText.trim().isEmpty()) {
+            String[] items = workItemsText.split(";");
+            for (String item : items) {
+                String trimmedItem = item.trim();
+                if (!trimmedItem.isEmpty()) {
+                    JSONObject workItemObj = new JSONObject();
+                    workItemObj.put("WORK_ITEM", trimmedItem);
+                    workItems.put(workItemObj);
+                }
+            }
+        }
+        return workItems;
+    }
+
+    private JSONArray parseFailureReasons(String failureReasonsText) {
+        JSONArray reasons = new JSONArray();
+        if (failureReasonsText != null && !failureReasonsText.trim().isEmpty()) {
+            String[] items = failureReasonsText.split(";");
+            for (String item : items) {
+                String trimmedItem = item.trim();
+                if (!trimmedItem.isEmpty()) {
+                    reasons.put(trimmedItem);
+                }
+            }
+        }
+        return reasons;
+    }
+
     private String getValueOrEmpty(CSVRecord record, String columnName) {
         try {
             String value = record.get(columnName);
@@ -144,16 +200,10 @@ public class CSVToJSONProcessor {
         }
     }
 
-
-    /**
-     * Saves the JSON object to a file for debugging/verification
-     */
     public void saveJSONToFile(JSONObject jsonObject, String outputPath) throws IOException {
         LOGGER.info("Saving converted JSON to: {}", outputPath);
-
         Files.createDirectories(Paths.get(outputPath).getParent());
         Files.write(Paths.get(outputPath), jsonObject.toString(2).getBytes());
-
         LOGGER.info("JSON file saved successfully");
     }
 }
