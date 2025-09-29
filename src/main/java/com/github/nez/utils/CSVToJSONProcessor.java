@@ -56,7 +56,8 @@ public class CSVToJSONProcessor {
         switch (noticeType) {
             case MAINTENANCE:
                 return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER", "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
+                        "PROPERTY_CODE", "UNIT_NUMBER",
+                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
                         "NOTICE_SENT_DATE", "WORK_EXPECTED_DATE", "WORK_TO_BE_COMPLETED"
                 };
             case LEASE_INFRACTION_DOGS:
@@ -66,12 +67,15 @@ public class CSVToJSONProcessor {
                 };
             case MISSED_EXTERMINATION:
                 return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER"
+                        "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
+                        "PREV_WORK_SCHEDULE_DATE",
+                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME"
                 };
             case FAILED_EXTERMINATION:
                 return new String[]{
                         "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
-                        "EXPECTED_WORK_DATE", "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
+                        "EXPECTED_WORK_DATE",
+                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
                         "FAILURE_REASONS"
                 };
             default:
@@ -149,14 +153,17 @@ public class CSVToJSONProcessor {
     private void processMissedExterminationRecord(CSVRecord record, JSONObject notice) {
         notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
         notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
-        // Add PREV_WORK_SCHEDULE_DATE based on current date logic if needed
+        notice.put("PREV_WORK_SCHEDULE_DATE", getValueOrEmpty(record, "PREV_WORK_SCHEDULE_DATE"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "PREV_WORK_SCHEDULE_DATE"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
     }
 
     private void processFailedExterminationRecord(CSVRecord record, JSONObject notice) {
         notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
         notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
         notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
-        notice.put("EXPECTED_WORK_DATE",getValueOrEmpty(record,"EXPECTED_WORK_DATE"));
+        notice.put("EXPECTED_WORK_DATE", getValueOrEmpty(record, "EXPECTED_WORK_DATE"));
         notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
         notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
 
