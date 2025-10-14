@@ -38,6 +38,15 @@ public enum DevelopmentPropertyInfo {
             "NJ",
             "08844",
             "rpmhillsborough.com"
+    ),
+    HERRONTOWN_RESIDENCES(
+            "900her",
+            "Residences at Herrontown",
+            "900 Herrontown Rd",
+            "Princeton",
+            "NJ",
+            "08540",
+            "liveatherrontown.com"
     );
 
     DevelopmentPropertyInfo(String propertyCode, String propertyName, String addressStreet, String addressCity, String addressState, String addressZip, String propertyWebsite) {

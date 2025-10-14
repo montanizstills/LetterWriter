@@ -149,6 +149,6 @@ public class GeneratePDF {
                 notice.getString("UNIT_NUMBER"),
                 notice.getString("TENANT_FIRST_NAME"),
                 notice.getString("TENANT_LAST_NAME"),
-                noticeTypeString);
+                noticeTypeString); // todo - should say lease infraction for all notice types except maint_no.
     }
 }
