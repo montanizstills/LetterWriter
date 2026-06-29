@@ -1,4 +1,4 @@
-package com.github.nez;
+package com.github.nez.extract;
 
 import com.adobe.pdfservices.operation.PDFServices;
 import com.adobe.pdfservices.operation.PDFServicesMediaType;
