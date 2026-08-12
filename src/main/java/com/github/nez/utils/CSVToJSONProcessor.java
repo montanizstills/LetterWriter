@@ -1,6 +1,6 @@
 package com.github.nez.utils;
 
-import com.github.nez.NoticeType;
+import com.github.nez.write.NoticeType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -25,15 +25,10 @@ public class CSVToJSONProcessor {
         JSONArray noticesArray = new JSONArray();
 
         try (Reader reader = Files.newBufferedReader(Paths.get(csvFilePath))) {
-            String[] headers = getHeadersForNoticeType(noticeType);
+//            String[] headers = getHeadersForNoticeType(noticeType);
+//            CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(headers).setSkipHeaderRecord(true).setTrim(true).setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).build();
 
-            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-                    .setHeader(headers)
-                    .setSkipHeaderRecord(true)
-                    .setTrim(true)
-                    .setIgnoreEmptyLines(true)
-                    .setIgnoreHeaderCase(true)
-                    .build();
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).setTrim(true).setIgnoreEmptyLines(true).setIgnoreHeaderCase(true).build();
 
             CSVParser csvParser = csvFormat.parse(reader);
 
@@ -52,47 +47,22 @@ public class CSVToJSONProcessor {
         return rootObject;
     }
 
-    private String[] getHeadersForNoticeType(NoticeType noticeType) {
-        switch (noticeType) {
-            case MAINTENANCE:
-                return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER",
-                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
-                        "NOTICE_SENT_DATE", "WORK_EXPECTED_DATE", "WORK_TO_BE_COMPLETED"
-                };
-            case LEASE_INFRACTION_DOGS:
-                return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
-                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME"
-                };
-            case MISSED_EXTERMINATION:
-                return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
-                        "PREV_WORK_SCHEDULE_DATE",
-                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME"
-                };
-            case FAILED_EXTERMINATION:
-                return new String[]{
-                        "PROPERTY_CODE", "UNIT_NUMBER", "NOTICE_SENT_DATE",
-                        "EXPECTED_WORK_DATE",
-                        "TENANT_FIRST_NAME", "TENANT_LAST_NAME",
-                        "FAILURE_REASONS"
-                };
-            default:
-                throw new IllegalArgumentException("Unknown notice type: " + noticeType);
-        }
-    }
-
     private String getArrayKeyForNoticeType(NoticeType noticeType) {
         switch (noticeType) {
             case MAINTENANCE:
-                return "maintenance_notices";
-            case FAILED_EXTERMINATION:
-                return "failed_extermination_notices";
+                return NoticeType.MAINTENANCE.getTemplateFileName();
+            case FAILED_EXTERMINATION_SINGLE:
+                return NoticeType.FAILED_EXTERMINATION_SINGLE.getTemplateFileName();
+            case FAILED_EXTERMINATION_MULTI:
+                return NoticeType.FAILED_EXTERMINATION_MULTI.getTemplateFileName();
             case MISSED_EXTERMINATION:
-                return "missed_extermination_notices";
+                return NoticeType.MISSED_EXTERMINATION.getTemplateFileName();
             case LEASE_INFRACTION_DOGS:
-                return "lease_infraction_notices";
+                return NoticeType.LEASE_INFRACTION_DOGS.getTemplateFileName();
+            case DCA_PREINSPECT:
+                return NoticeType.DCA_PREINSPECT.getTemplateFileName();
+            case FILTER:
+                return NoticeType.FILTER.getTemplateFileName();
             default:
                 throw new IllegalArgumentException("Unknown notice type: " + noticeType);
         }
@@ -112,8 +82,16 @@ public class CSVToJSONProcessor {
                 case MISSED_EXTERMINATION:
                     processMissedExterminationRecord(record, notice);
                     break;
-                case FAILED_EXTERMINATION:
+                case FAILED_EXTERMINATION_SINGLE:
                     processFailedExterminationRecord(record, notice);
+                    break;
+                case FAILED_EXTERMINATION_MULTI:
+                    processFailedExterminationRecordMulti(record, notice);
+                    break;
+                case DCA_PREINSPECT:
+                    processDCAPreinspectRecord(record, notice);
+                case FILTER:
+                    processFilterRecord(record, notice);
                     break;
             }
 
@@ -123,6 +101,24 @@ public class CSVToJSONProcessor {
             LOGGER.error("Error processing CSV record at line {}: {}", record.getRecordNumber(), e.getMessage());
             return null;
         }
+    }
+
+    private void processFilterRecord(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+        notice.put("WORK_EXPECTED_DATE", getValueOrEmpty(record, "WORK_EXPECTED_DATE"));
+    }
+
+    private void processDCAPreinspectRecord(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+        notice.put("WORK_EXPECTED_DATE", getValueOrEmpty(record, "WORK_EXPECTED_DATE"));
     }
 
     private void processMaintenanceRecord(CSVRecord record, JSONObject notice) {
@@ -173,6 +169,42 @@ public class CSVToJSONProcessor {
             notice.put("FAILURE_REASONS", reasons);
         }
     }
+
+    private void processFailedExterminationRecordMulti(CSVRecord record, JSONObject notice) {
+        notice.put("PROPERTY_CODE", getValueOrEmpty(record, "PROPERTY_CODE"));
+        notice.put("UNIT_NUMBER", getValueOrEmpty(record, "UNIT_NUMBER"));
+        notice.put("TENANT_FIRST_NAME", getValueOrEmpty(record, "TENANT_FIRST_NAME"));
+        notice.put("TENANT_LAST_NAME", getValueOrEmpty(record, "TENANT_LAST_NAME"));
+        notice.put("NOTICE_SENT_DATE", getValueOrEmpty(record, "NOTICE_SENT_DATE"));
+        notice.put("WORK_EXPECTED_DATE", getValueOrEmpty(record, "WORK_EXPECTED_DATE"));
+
+        String failureReasons = getValueOrEmpty(record, "FAILURE_REASONS");
+        if (!failureReasons.isEmpty()) {
+            JSONArray reasons = parseFailureReasons(failureReasons);
+            notice.put("FAILURE_REASONS", reasons);
+        }
+
+        String failureDates = getValueOrEmpty(record, "ALL_NOTICE_DATES");
+        if (!failureDates.isEmpty()) {
+            JSONArray dates = parseFailureDates(failureDates);
+            notice.put("ALL_NOTICE_DATES", dates);
+        }
+    }
+
+    private JSONArray parseFailureDates(String failureDates) {
+        JSONArray reasons = new JSONArray();
+        if (failureDates != null && !failureDates.trim().isEmpty()) {
+            String[] items = failureDates.split(";");
+            for (String item : items) {
+                String trimmedItem = item.trim();
+                if (!trimmedItem.isEmpty()) {
+                    reasons.put(trimmedItem);
+                }
+            }
+        }
+        return reasons;
+    }
+
 
     private JSONArray parseWorkItems(String workItemsText) {
         JSONArray workItems = new JSONArray();

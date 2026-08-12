@@ -130,24 +130,18 @@ public class GeneratePDF {
         switch (noticeType) {
             case MAINTENANCE:
                 return NoticeType.MAINTENANCE.getTemplateFileName();
-//                return "maintenance_notices";
             case FAILED_EXTERMINATION_SINGLE:
                 return NoticeType.FAILED_EXTERMINATION_SINGLE.getTemplateFileName();
-//                return "failed_extermination_notices";
             case FAILED_EXTERMINATION_MULTI:
                 return NoticeType.FAILED_EXTERMINATION_MULTI.getTemplateFileName();
             case MISSED_EXTERMINATION:
                 return NoticeType.MISSED_EXTERMINATION.getTemplateFileName();
-//                return "missed_extermination_notices";
             case LEASE_INFRACTION_DOGS:
                 return NoticeType.LEASE_INFRACTION_DOGS.getTemplateFileName();
-//                return "lease_infraction_notices";
             case DCA_PREINSPECT:
                 return NoticeType.DCA_PREINSPECT.getTemplateFileName();
-//                return "dca_notices";
             case FILTER:
                 return NoticeType.FILTER.getTemplateFileName();
-//                return "filter_notices";
             default:
                 throw new IllegalArgumentException("Unknown notice type: " + noticeType);
         }

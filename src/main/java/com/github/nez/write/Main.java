@@ -9,14 +9,14 @@ public class Main {
         GeneratePDF pdf = new GeneratePDF();
 
 ////         Generate maintenance notices
-//        pdf.generateMultiplePDFsFromCSV(
-//                NoticeType.MAINTENANCE,
-//                "src/main/resources/data_files/RPM/Maintenance_Notice.csv",
-//                CREDENTIALS_JSON,
-//                "output",
-//                LOG_FILE_PATH,
-//                Boolean.FALSE
-//        );
+        pdf.generateMultiplePDFsFromCSV(
+                NoticeType.MAINTENANCE,
+                "src/main/resources/data_files/RPM/Maintenance_Notice.csv",
+                CREDENTIALS_JSON,
+                "output",
+                LOG_FILE_PATH,
+                Boolean.FALSE
+        );
 
 //        Generate Filter Notices
 //        pdf.generateMultiplePDFsFromCSV(NoticeType.FILTER,
@@ -27,7 +27,7 @@ public class Main {
 //                Boolean.TRUE
 //                );
 
-//        Generate DCA notices
+////        Generate DCA notices
 //        pdf.generateMultiplePDFsFromCSV(
 //                NoticeType.DCA_PREINSPECT,
 //                "src/main/resources/data_files/RPM/PreDCA_inspections.csv",
@@ -50,7 +50,6 @@ public class Main {
 ////         Generate failed extermination notices - Single Occurrence
 //        pdf.generateMultiplePDFsFromCSV(
 //                NoticeType.FAILED_EXTERMINATION_SINGLE,
-//                "src/main/resources/data_files/RPM/leaseinfraction_exterm_reinspect.csv",
 //                "src/main/resources/data_files/RPM/singles_one_occurrence.csv",
 //                CREDENTIALS_JSON,
 //                "output",
@@ -58,14 +57,14 @@ public class Main {
 //                Boolean.FALSE
 //        );
 ////        Generate failed extermination notices - MultiOccurrence
-        pdf.generateMultiplePDFsFromCSV(
-                NoticeType.FAILED_EXTERMINATION_MULTI,
-                "src/main/resources/data_files/RPM/duplicates_all_dates.csv",
-                CREDENTIALS_JSON,
-                "output",
-                LOG_FILE_PATH,
-                Boolean.TRUE
-        );
+//        pdf.generateMultiplePDFsFromCSV(
+//                NoticeType.FAILED_EXTERMINATION_MULTI,
+//                "src/main/resources/data_files/RPM/extermination_multiple_offences.csv",
+//                CREDENTIALS_JSON,
+//                "output",
+//                LOG_FILE_PATH,
+//                Boolean.TRUE
+//        );
 
 //         Generate missed extermination notices
 //        pdf.generateMultiplePDFsFromCSV(

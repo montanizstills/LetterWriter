@@ -1,0 +1,17 @@
+property_code,unit_number,notice_sent_date,expected_work_date,tenant_first_name,tenant_last_name,failure_reasons
+900her,112,3/26/2026,6/30/2026,Jonathan,Simon,dirty dishes; grease / food on floors / walls; sticky / dirty floors; grease on stove / counter tops;
+900her,220,3/26/2026,6/30/2026,Timia,Johnson,dirty dishes; dirty laundry; grease / food on floors / walls; sticky / dirty floors; grease on stove / counter tops;
+amwell,133,3/26/2026,7/1/2026,Willie,Gray,dirty dishes; open foods; grease / food on floors walls; sticky / dirty floors; grease on stove / counter tops;
+amwell,142,5/28/2026,7/1/2026,Joseph,Glynn,dirty dishes; sticky / dirty / floors
+amwell,173,5/28/2026,7/1/2026,Lisa,Jones,dirty dishes; open foods; rubbish not in container; grease / food on floors / walls; sticky / dirty floors; grease on stove / counter tops;
+patriot,103,6/22/2026,6/25/2026,Rashanda,Arrington,dirty dishes;
+patriot,207,3/11/2026,6/25/2026,Corinda,Clemens,grease on stove / counter tops;
+patriot,302,3/11/2026,6/25/2026,Lakasha,Harris,grease on stove/counter tops;
+patriot,306,1/14/2026,6/25/2026,Nikiya,Bailey,dirty dishes;
+patriot,310,2/11/2026,6/25/2026,Joseph,Paasewe,dirty dishes; dirty laundry; rubbish not in container; grease on stove / counter tops;
+patriot,406,3/11/2026,6/25/2026,James,Moore,dirty dishes;
+patriot,412,3/11/2026,6/25/2026,VACANT,VACANT,dirty dishes;
+patvlg2,105,5/27/2026,6/25/2026,Daria,Holowczak,dirty dishes; rubbish not in container; grease on stove / counter tops;
+patvlg2,115,5/27/2026,6/25/2026,Laquana,Holman,dirty dishes; rubbish not in container; grease on stove / counter tops;
+patvlg2,219,5/27/2026,6/25/2026,Keishelle,White,dirty dishes; grease on stove / counter tops;
+patvlg2,313,5/27/2026,6/25/2026,Michelle,Mcfadden,dirty dishes; rubbish not in container;
