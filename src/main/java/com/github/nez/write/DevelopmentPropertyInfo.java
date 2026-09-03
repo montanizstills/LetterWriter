@@ -47,6 +47,15 @@ public enum DevelopmentPropertyInfo {
             "NJ",
             "08540",
             "liveatherrontown.com"
+    ),
+    HENDERSON_SQUARE(
+            "hendsq",
+            "Henderson Square",
+            "211 Henderson Rd",
+            "South Brunswick",
+            "NJ",
+            "08852",
+            "hendersonsquarenj.com"
     );
 
     DevelopmentPropertyInfo(String propertyCode, String propertyName, String addressStreet, String addressCity, String addressState, String addressZip, String propertyWebsite) {
